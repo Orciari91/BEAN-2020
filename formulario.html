@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Formulario HTML</title>
+</head>
+<body>
+	<h1>Formulario HTML</h1>
+	<form action="http://localhost/enviar" method="post">
+
+		<label for="nombre">Ingrese su nombre: </label>
+		<input type="text" name="nombre" placeholder="Nombre">
+
+		<br>
+
+		<label for="correo">Ingrese su E-Mail: </label>
+		<input type="email" name="correo" placeholder="EMail">
+		
+		<br>
+
+		<label for="asunto">Elija su asunto: </label>
+		<select name="asunto">
+			<option value="">Consulta</option>
+			<option value="">Pedido</option>
+			<option value="">Sugerencia</option>
+			<option value="">Reclamo</option>
+		</select>
+
+		<br>
+
+		<label for="mensaje">Ingrese su mensaje: </label>
+		<textarea name="mensaje" cols="30" rows="10" placeholder="Max: 100 caracteres"></textarea>
+
+		<br>
+
+		<input type="submit" value="Enviar">
+
+	</form>
+</body>
+</html>
