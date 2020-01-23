@@ -50,14 +50,46 @@ server.post("/enviar", function(request, response){
 		consulta: request.body
 	}
 
-	//Envio de mail..
-	miniOutlook.sendMail({
-		from : datos.consulta.correo,
-		to: "pablo.orciari@hotmail.com.ar",
-		subject: datos.consulta.asunto,
-		html: "<strong>" + datos.consulta.mensaje + "</strong>"
-	})
+	//Validación
 
-	response.json(datos)
+	if (datos.consulta.nombre == "") {
+		response.json({
+			rta: "error",
+			msg: "El nombre no puede quedar vacio"
+		})
+	}
+	else if (datos.consulta.correo == "" || datos.consulta.correo.indexOf("@") == -1)
+	{
+		response.json({
+			rta: "error",
+			msg: "Ingrese un correo valido"
+		})
+	}
+	else if (datos.consulta.asunto == "")
+	{
+		response.json({
+			rta: "error",
+			msg: "Elija un asunto"
+		})	
+	}
+	else if (datos.consulta.mensaje.length < 50 || datos.consulta.mensaje.length > 200)
+	{
+		response.json({
+			rta: "error",
+			msg: "Ingrese un mensaje entre 50 y 200 caracteres"
+		})
+	}
+	else{
+		//Envio de mail..
+		miniOutlook.sendMail({
+			from : datos.consulta.correo,
+			to: "pablo.orciari@hotmail.com.ar",
+			subject: datos.consulta.asunto,
+			html: "<strong>" + datos.consulta.mensaje + "</strong>"
+		})
+
+		response.json(datos)
+	}
+
 })
 
