@@ -22,10 +22,10 @@
 
 			<label for="asunto">Elija su asunto: </label>
 			<select class="form-control" name="asunto">
-				<option value="">Consulta</option>
-				<option value="">Pedido</option>
-				<option value="">Sugerencia</option>
-				<option value="">Reclamo</option>
+				<option value="ax45">Consulta</option>
+				<option value="ax38">Pedido</option>
+				<option value="ax67">Sugerencia</option>
+				<option value="ax14">Reclamo</option>
 			</select>
 
 			<br>
@@ -49,7 +49,7 @@
 				let ahora = new Date()
 				let datos = new FormData(this)
 
-				datos.append("fecha", ahora.toString())
+				datos.append("fecha", ahora.valueOf())
 
 				//Enviar datos asincronicamente
 
@@ -59,8 +59,9 @@
 				}).then(function(response){
 					return response.json()
 				}).then(function(server){
+					console.clear()
 					alert(server.msg)
-
+					console.log(server)
 				})
 
 			} 

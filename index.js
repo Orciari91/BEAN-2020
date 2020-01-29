@@ -2,6 +2,9 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const nodemailer = require("nodemailer")
 const multer = require("multer")
+const joi = require("@hapi/joi") //validar esquemas de datos // URL: https://github.com/hapijs/joi
+const hbs = require('nodemailer-express-handlebars') //templates para mails. Tiene que estar escritos en html incluyendo los estilos sin usar css
+
 
 /* INICIO configs nodemailer */
 
@@ -10,8 +13,8 @@ const miniOutlook = nodemailer.createTransport({
     host: 'smtp.ethereal.email',
     port: 587,
     auth: {
-        user: 'armando.hagenes55@ethereal.email',
-        pass: 'Ef1AUuZYgMqAQqeDV5'
+        user: 'audra.kub86@ethereal.email',
+        pass: 'jyA4vC3kJvBq22cfHM'
     }
 });
 
@@ -27,6 +30,19 @@ miniOutlook.verify(function(error, ok){
 	}
 
 })
+//3)Asignar motor de plantilla "Handlebars"
+const render = {
+	viewEngine: {
+		layoutsDir: "template/",
+		partialsDir: "template/",
+		defaultLayout: false,
+		extName: ".hbs"
+	}, 			//motor de la vista
+	viewPath: "template/",	//Ruta de la vista
+	extName: ".hbs", 		//Extension
+}
+miniOutlook.use("compile", hbs(render))
+
 
 /* FIN de configs nodemailer */
 
@@ -53,47 +69,44 @@ server.post("/enviar", function(request, response){
 		consulta: request.body
 	}
 
-	//Validación INSTALAR MODULO JOI E IMPLEMENTARLO POR LOS IF's PARA VALIDAR ESQUEMA DE DATOS
-	//URL: https://github.com/hapijs/joi
+	
 
-	if (datos.consulta.nombre == "" || datos.consulta.nombre == null || datos.consulta.nombre == undefined) {
-		response.json({
-			rta: "error",
-			msg: "El nombre no puede quedar vacio"
-		})
-	}
-	else if (datos.consulta.correo == "" || datos.consulta.correo.indexOf("@") == -1 || datos.consulta.correo == null || datos.consulta.correo == undefined)
-	{
-		response.json({
-			rta: "error",
-			msg: "Ingrese un correo valido"
-		})
-	}
-	else if (datos.consulta.asunto == "" || datos.consulta.asunto == null || datos.consulta.asunto == undefined)
-	{
-		response.json({
-			rta: "error",
-			msg: "Elija un asunto"
-		})	
-	}
-	else if (datos.consulta.mensaje.length < 50 || datos.consulta.mensaje.length > 200 || datos.consulta.mensaje == null || datos.consulta.mensaje == undefined)
-	{
-		response.json({
-			rta: "error",
-			msg: "Ingrese un mensaje entre 50 y 200 caracteres"
-		})
-	}
-	else{
-		//Envio de mail..
-		miniOutlook.sendMail({
-			from : datos.consulta.correo,
-			to: "pablo.orciari@hotmail.com.ar",
-			subject: datos.consulta.asunto,
-			html: "<strong>" + datos.consulta.mensaje + "</strong>"
-		})
+const schema = joi.object({
+	nombre: joi.string().min(3).max(25).required(),
+	correo: joi.string().email(
+	{ 
+		minDomainSegments: 2, 
+		tlds: { 
+			allow: ["com", "net", "org"] 
+		} 
+	}).required(),
+	asunto: joi.string().alphanum().valid("ax45", "ax38", "ax67", "ax14").required(),
+	mensaje: joi.string().min(50).max(200).required(),
+	fecha: joi.date().timestamp('unix')
+})
 
-		response.json(datos)
-	}
+let validacion = schema.validate(datos.consulta)
+
+if(validacion.error){
+	response.json(validacion.error)
+}
+else
+{
+	miniOutlook.sendMail({
+	from : datos.consulta.correo,
+	to: "pablo.orciari@hotmail.com.ar",
+	subject: datos.consulta.asunto,
+	//html: "<strong>" + datos.consulta.mensaje + "</strong>"	
+	template: "prueba",
+	context : datos.consulta
+	//implementar plantilla
+}, function(error, info){
+
+	let msg = error ? "Su consulta no pudo ser enviada" : "Gracias por su consulta" //operador ternario 
+
+	response.json({msg})
+	})
+}
 
 })
 
