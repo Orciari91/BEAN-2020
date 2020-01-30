@@ -33,7 +33,7 @@ miniOutlook.verify(function(error, ok){
 //3)Asignar motor de plantilla "Handlebars"
 const render = {
 	viewEngine: {
-		layoutsDir: "template/",
+		layoutsDir: "template/", //carpeta donde se van a alojar las plantillas de mails
 		partialsDir: "template/",
 		defaultLayout: false,
 		extName: ".hbs"
@@ -99,7 +99,7 @@ else
 	//html: "<strong>" + datos.consulta.mensaje + "</strong>"	
 	template: "prueba",
 	context : datos.consulta
-	//implementar plantilla
+	//implementar el sistema de plantilla hbs + envio del email https://www.npmjs.com/package/nodemailer-express-handlebars
 }, function(error, info){
 
 	let msg = error ? "Su consulta no pudo ser enviada" : "Gracias por su consulta" //operador ternario 
